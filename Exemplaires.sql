@@ -1,4 +1,4 @@
-INSERT INTO 'Bibliotheque'.'Exemplaires' ('code_barre','code_catalogue','etablissement','edition') 
+INSERT INTO Bibliotheque.Exemplaires
 VALUES
 (100000,1000,'Lycée Le Dantec','Gallimard'),
 (100100,1001,'Orange','Hatier'),
