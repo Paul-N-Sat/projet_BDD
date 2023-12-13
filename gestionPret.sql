@@ -1,7 +1,7 @@
 DELIMITER //
 
 CREATE PROCEDURE GestionPrets(
-    -- IN num_abonné INT,
+    -- IN numero abonne INT,
     IN utilisateur_id INT,
 
     -- IN code_catalogue INT,
@@ -30,7 +30,7 @@ BEGIN
 
     -- Vérifier le nombre de prêts actuels de l'utilisateur
     SELECT COUNT(code_barre) INTO nb_prets
-    FROM Emprunts
+    FROM Emprunt
     WHERE utilisateur_id = num_abonné;
 
     IF nb_prets >= 5 THEN
@@ -40,13 +40,13 @@ BEGIN
         -- Vérifier si des exemplaires du contenu sont disponibles
         IF EXISTS (
             SELECT code_barre
-            FROM Exmplaires
-            WHERE ((SELECT COUNT(code_barre) FROM Emprunts WHERE code_barre = Exemplaires.code_barre) = 0) AND code_catalogue = contenu_id
+            FROM Exemplaires
+            WHERE ((SELECT COUNT(code_barre) FROM Emprunt WHERE code_barre = Exemplaires.code_barre) = 0) AND code_catalogue = contenu_id
         ) THEN
             -- Vérifier si un exemplaire est disponible dans la ville de l'utilisateur
             IF (SELECT etablissement FROM Exemplaires WHERE (code_catalogue = contenu_id)) = Lieu THEN
                 -- Effectuer l'emprunt
-                INSERT INTO Emprunts
+                INSERT INTO Emprunt
                 VALUES (utilisateur_id, contenu_id, CURRENT_DATE, rendu_emprunt, 0);
             ELSE
                 -- Signaler à l'utilisateur qu'aucun exemplaire les établissements qui propose le contenu
@@ -56,7 +56,7 @@ BEGIN
             END IF;
 
             -- Effectuer l'emprunt
-            INSERT INTO Emprunts
+            INSERT INTO Emprunt
             VALUES (utilisateur_id, contenu_id, CURRENT_DATE, rendu_emprunt, 0);
 
         ELSE

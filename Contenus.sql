@@ -1,4 +1,4 @@
-INSERT INTO Bibliotheque.Contenus (`code_catalogue`, `nom`, `auteur`, `type`, `genre`)
+INSERT INTO Bibliotheque.Contenus
 VALUES
 (1000, 'Le Seigneur des Anneaux', 'J.R.R. Tolkien', 'Livre', 'Fantasy'),
 (1001, 'Jurassic Park', 'Michael Crichton', 'Livre', 'Science-fiction'),
