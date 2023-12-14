@@ -32,7 +32,6 @@ BEGIN
         AND etablissement = Lieu
         LIMIT 1;
 
-
     -- RENDU_EMPRUNT : On determine la durée de l'emprunt en fonction du type de contenu
     IF type_contenu = 'Livre' THEN
         SET rendu_emprunt = DATE_ADD(CURRENT_DATE, INTERVAL 15 DAY);
@@ -61,7 +60,6 @@ BEGIN
         INSERT INTO Emprunt
         VALUES (utilisateur_id, code_barre_exemplaire, CURRENT_DATE, rendu_emprunt, 0);
 
-
     -- Sinon, vérifier si des exemplaires du contenu sont disponibles, dans un autre lieu
     ELSE 
         IF somme2 = 0 THEN
@@ -83,29 +81,13 @@ BEGIN
             SELECT etablissement FROM Exemplaires
             WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
             AND (code_catalogue = contenu_id);
+
             SIGNAL SQLSTATE '45000' 
             SET MESSAGE_TEXT = 'L exemplaire est disponible dans les etablissements ci-dessus:';
         END IF;
     END IF;
 END //
 
--- Le trigger permet de vérifier si l'utilisateur a déjà 5 prêts en cours 
-CREATE TRIGGER trig_nombre_prets
-BEFORE INSERT ON Emprunt
-FOR EACH ROW
-BEGIN
-    DECLARE nb_prets INT;
-
-    -- NB_PRETS : Vérifier le nombre de prêts actuels de l'utilisateur
-    SELECT COUNT(code_barre) INTO nb_prets
-    FROM Emprunt
-    WHERE num_abonné = NEW.num_abonné;
-
-    IF nb_prets >= 5 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Vous avez déjà 5 prêts en cours.';
-    END IF;
-END //
 
 
 DELIMITER ;
