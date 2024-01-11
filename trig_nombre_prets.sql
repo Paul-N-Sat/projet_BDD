@@ -9,7 +9,7 @@ BEGIN
     DECLARE nb_prets INT;
 
     -- NB_PRETS : Vérifier le nombre de prêts actuels de l'utilisateur
-    SELECT COUNT(code_barre) INTO nb_prets
+    SELECT COUNT(code_barre_emprunt) INTO nb_prets
     FROM Emprunt
     WHERE num_abonné_emprunt = NEW.num_abonné_emprunt;
 
