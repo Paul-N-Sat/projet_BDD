@@ -1,5 +1,10 @@
 USE Bibliotheque;
 
+DELETE FROM Bibliotheque.Emprunt;
+DELETE FROM Bibliotheque.Historique;
+DELETE FROM Bibliotheque.Demande;
+
+
 INSERT IGNORE INTO Bibliotheque.Emprunt
 VALUES
 (1,100100,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 15 DAY),0),
