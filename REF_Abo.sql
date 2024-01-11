@@ -2,7 +2,7 @@ USE Bibliotheque;
 
 DELIMITER //
 
-CREATE PROCEDURE Refresh_Abo(IN num_Abo INT) -- renouvelle l'abonnement d'un abonné
+CREATE PROCEDURE Renouvellement_Abo(IN num_Abo INT) -- renouvelle l'abonnement d'un abonné
 BEGIN
 
     -- Mise à jour des abonnés

@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `Bibliotheque`.`Demande` (
   `num_abonné` INT NOT NULL,
   `code_catalogue_dem` INT NOT NULL,
   `date_demande` DATE NOT NULL,
-  PRIMARY KEY (`num_abonné`),
+  PRIMARY KEY (`num_abonné`, `code_catalogue_dem`),
   INDEX `code_catalogue_idx` (`code_catalogue_dem` ASC) VISIBLE,
   CONSTRAINT `code_catalogue_dem`
     FOREIGN KEY (`code_catalogue_dem`)

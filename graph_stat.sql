@@ -1,6 +1,7 @@
 USE Bibliotheque;
 DELIMITER //
 
+-- Affiche le nombre d'emprunts en cours, le nombre d'emprunts par établissement et le titre le plus emprunté
 CREATE PROCEDURE Graph_Stat()
 BEGIN
     SELECT COUNT(*) AS "nombre d'emprunts en cours",
@@ -23,8 +24,7 @@ BEGIN
          GROUP BY titre
          ORDER BY COUNT(*) DESC
          LIMIT 1) AS "titre le plus emprunté"
-    FROM View_Emprunt
-    GROUP BY etablissement;
+    FROM View_Emprunt;
     
 END //
 

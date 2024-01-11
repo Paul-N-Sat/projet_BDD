@@ -13,11 +13,11 @@ CREATE PROCEDURE GestionPrets(
     IN type_contenu VARCHAR(50),
 
     -- Boolean pour savoir si l'utilisateur souhaite être en attente
-    -- 1 : Oui / 2 : Non
+    -- 1 : Oui / 0 : Non
     IN attente TINYINT,
 
     -- Lieu où l'utilisateur souhaite emprunter le contenu
-    IN Lieu VARCHAR(50)
+    IN Lieu VARCHAR(50),
 
     -- Boolean pour savoir si l'utilisateur souhaite uniquement les exemplaires disponibles dans le lieu demandé
     -- 1 : Oui / 0 : Non
@@ -31,17 +31,17 @@ BEGIN
     DECLARE somme2 INT;
 
     -- Vérifier si l'abonné a été pénalisé 3 fois auquel cas on le banni
-    IF (SELECT COUNT(penalite) FROM Historique WHERE Historique.penalite = 1 AND Historique.num_abonné_histo = utilisateur_id) > 3 THEN
+    IF (SELECT COUNT(penalite) FROM Historique WHERE Historique.penalite = 1 AND Historique.num_abonné_histo = utilisateur_id) >= 3 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = "Vous avez été pénalisé 3 fois. Vous êtes banni."
+        SET MESSAGE_TEXT = "Vous avez été pénalisé 3 fois. Vous êtes banni.";
     END IF;
 
     -- On enregistre dans une variable le code_barre de l'exemplaire disponible 
     SELECT Exemplaires.code_barre INTO code_barre_exemplaire
         FROM Exemplaires
-        WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
+        WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
         AND Exemplaires.code_cat = contenu_id 
-        AND etablissement = Lieu
+        AND Exemplaires.etablissement = Lieu
         LIMIT 1;
 
     -- RENDU_EMPRUNT : On determine la durée de l'emprunt en fonction du type de contenu
@@ -54,14 +54,14 @@ BEGIN
     -- SOMME : On calcule le nombre d exemplaires disponibles dans le lieu demande 
     SELECT COUNT(Exemplaires.code_barre) INTO somme
     FROM Exemplaires
-    WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
+    WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
     AND Exemplaires.code_cat = contenu_id 
     AND etablissement = Lieu;
 
     -- SOMME2 : On calcule le nombre d'exemplaires disponibles dans tous les lieux 
     SELECT COUNT(Exemplaires.code_barre) INTO somme2
     FROM Exemplaires
-    WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
+    WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
     AND Exemplaires.code_cat = contenu_id;
 
 
@@ -74,7 +74,7 @@ BEGIN
 
     -- Sinon, vérifier si des exemplaires du contenu sont disponibles, dans un autre lieu et si cela peut interesser notre client
     ELSE 
-        IF somme2 = 0 AND NOT lieu_demande_uniquement THEN
+        IF somme2 = 0 OR lieu_demande_uniquement = 1 THEN
 
             -- Aucun exemplaire disponible, demander à l'utilisateur s'il souhaite se mettre en attente
             IF attente = 1 THEN
@@ -91,7 +91,7 @@ BEGIN
             END IF;
         ELSE
             SELECT etablissement FROM Exemplaires
-            WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
+            WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
             AND (Exemplaires.code_cat = contenu_id);
 
             SIGNAL SQLSTATE '45000' 

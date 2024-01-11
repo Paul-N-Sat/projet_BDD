@@ -10,16 +10,20 @@ BEGIN
     SET date_seuil = DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY);
 
     -- Supprimer les demandes obsolètes
-    DELETE FROM Bibliotheque.Demande
+    DELETE FROM Demande
     WHERE Demande.code_catalogue_dem IN (
-        SELECT DISTINCT h.code_barre_histo
-        FROM Historique h
-        WHERE h.date_retour = (
-            SELECT MAX(date_retour)
-            FROM Bibliotheque.Historique
-            WHERE code_barre_histo = h.code_barre_histo
+        SELECT code_cat
+        FROM Exemplaires
+        WHERE Exemplaires.code_barre IN(
+            SELECT DISTINCT h.code_barre_histo
+            FROM Historique h
+            WHERE h.date_retour = (
+                SELECT MAX(date_retour)
+                FROM Bibliotheque.Historique
+                WHERE code_barre_histo = h.code_barre_histo
+            )
+            AND h.date_retour <= date_seuil
         )
-        AND h.date_retour <= date_seuil
     );
 END //
 DELIMITER ;
