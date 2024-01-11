@@ -1,0 +1,14 @@
+DROP TRIGGER IF EXISTS trig_nombre_prets;
+DROP TRIGGER IF EXISTS trig_nombre_demandes;
+DROP TRIGGER IF EXISTS trig_contenu_deja_demande;
+DROP TRIGGER IF EXISTS trig_est_abonnee;
+DROP TRIGGER IF EXISTS trig_new_abo;
+DROP TRIGGER IF EXISTS trig_contenu_deja_demande;
+DROP TRIGGER IF EXISTS trig_contenu_deja_emprunter;
+source trig_nombre_prets.sql;
+source trig_nombre_demandes.sql;
+source trig_contenu_deja_demande.sql;
+source trig_est_abonnee.sql;
+source trig_new_abo.sql;
+source trig_contenu_deja_demande.sql;
+source trig_deja_emprunter.sql;

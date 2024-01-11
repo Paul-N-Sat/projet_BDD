@@ -38,11 +38,12 @@ BEGIN
 
     -- On enregistre dans une variable le code_barre de l'exemplaire disponible 
     SELECT Exemplaires.code_barre INTO code_barre_exemplaire
-        FROM Exemplaires
-        WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
-        AND Exemplaires.code_cat = contenu_id 
-        AND Exemplaires.etablissement = Lieu
-        LIMIT 1;
+    FROM Exemplaires
+    LEFT JOIN Emprunt ON Exemplaires.code_barre = Emprunt.code_barre
+    WHERE Emprunt.code_barre IS NULL
+    AND Exemplaires.code_cat = contenu_id 
+    AND Exemplaires.etablissement = Lieu
+    LIMIT 1;
 
     -- RENDU_EMPRUNT : On determine la durée de l'emprunt en fonction du type de contenu
     IF type_contenu = 'Livre' THEN
@@ -51,29 +52,15 @@ BEGIN
         SET rendu_emprunt = DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY);
     END IF;
 
-    -- SOMME : On calcule le nombre d exemplaires disponibles dans le lieu demande 
-    SELECT COUNT(Exemplaires.code_barre) INTO somme
-    FROM Exemplaires
-    WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
-    AND Exemplaires.code_cat = contenu_id 
-    AND etablissement = Lieu;
-
     -- SOMME2 : On calcule le nombre d'exemplaires disponibles dans tous les lieux 
     SELECT COUNT(Exemplaires.code_barre) INTO somme2
     FROM Exemplaires
-    WHERE Exemplaires.code_barre NOT IN (SELECT Emprunt.code_barre FROM Emprunt)
+    LEFT JOIN Emprunt ON Exemplaires.code_barre = Emprunt.code_barre
+    WHERE Emprunt.code_barre IS NULL
     AND Exemplaires.code_cat = contenu_id;
 
-
-    -- Vérifier si des exemplaires du contenu sont disponibles, dans le lieu demandé
-    IF somme > 0 THEN
-
-        -- Effectuer l'emprunt
-        INSERT INTO Emprunt
-        VALUES (utilisateur_id, code_barre_exemplaire, CURRENT_DATE, rendu_emprunt, 0);
-
-    -- Sinon, vérifier si des exemplaires du contenu sont disponibles, dans un autre lieu et si cela peut interesser notre client
-    ELSE 
+    -- Traduit : Si aucun exemplaire n'est disponible dans le lieu désiré
+    IF code_barre_exemplaire IS NULL THEN
         IF somme2 = 0 OR lieu_demande_uniquement = 1 THEN
 
             -- Aucun exemplaire disponible, demander à l'utilisateur s'il souhaite se mettre en attente
@@ -97,7 +84,12 @@ BEGIN
             SIGNAL SQLSTATE '45000' 
             SET MESSAGE_TEXT = 'L exemplaire est disponible dans les etablissements ci-dessus:';
         END IF;
+    ELSE
+        -- Effectuer l'emprunt
+        INSERT INTO Emprunt
+        VALUES (utilisateur_id, code_barre_exemplaire, CURRENT_DATE, rendu_emprunt, 0);
     END IF;
+
 END //
 
 

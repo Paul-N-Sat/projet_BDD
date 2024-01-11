@@ -1,5 +1,10 @@
 USE Bibliotheque;
 
+DELETE FROM Bibliotheque.Emprunt;
+DELETE FROM Bibliotheque.Historique;
+DELETE FROM Bibliotheque.Demande;
+
+
 INSERT IGNORE INTO Bibliotheque.Emprunt
 VALUES
 (1,100100,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 15 DAY),0),
@@ -25,21 +30,25 @@ VALUES
 
 DELIMITER //
 
+-- On teste le refus d'emprunt si plus de 5 emprunts sont actifs
 CREATE PROCEDURE test_trig_nombre_emprunts()
     BEGIN
         CALL GestionPrets(1,1010,'Album',0,'IUT', 0);
     END //
 
+-- On teste le refus d'emprunt si plus de 3 demandes sont actives
 CREATE PROCEDURE test_trig_nombre_demande()
     BEGIN
-        CALL GestionPrets(22,1020,'Livre',0,'ENSSAT', 0);
+        CALL GestionPrets(22,1031,'Livre',0,'ENSSAT', 0);
     END //
 
+-- On teste le refus d'emprunt si le contenu a déjà été emprunté par un autre utilisateur
 CREATE PROCEDURE test_trig_deja_emprunte()
     BEGIN
-        CALL GestionPrets(3,1002,'Film',0,'IUT', 0);
+        CALL GestionPrets(3,1005,'Film',0,'IUT', 0);
     END //
 
+-- On teste si le refus d'emprunt si la personne n'est pas abonnée
 CREATE PROCEDURE test_trig_est_abonnee()
     BEGIN
         CALL GestionPrets(2,1005,'Film',0,'ENSSAT', 0);
@@ -63,7 +72,7 @@ CREATE PROCEDURE test_existence()
         CALL GestionPrets(6,1002,'Film',1,'ENSSAT', 0);
     END //
 
--- On teste que GestionPrêts ne propose pas de lieux où le contenu est disponible si l'utilisateur a demandé des oeuvres uniquement dans son lieu
+-- On teste que GestionPrêts ne propose pas de lieux où le contenu est disponible si l'utilisateur a demandé des oeuvres uniquement dans son lieu et est donc ici mis en attente à sa demande
 CREATE PROCEDURE test_lieu_demandé_uniquement()
     BEGIN
         CALL GestionPrets(15,1013,'Film',1,'ENSSAT', 1);
@@ -75,6 +84,7 @@ CREATE PROCEDURE test_banni()
         CALL GestionPrets(32,1013,'Film',1,'ENSSAT', 1);
     END //
 
+-- On teste si le trigger trig_contenu_deja_demande fonctionne
 CREATE PROCEDURE test_trig_contenu_deja_demande()
     BEGIN
         CALL GestionPrets(25,1000,'Livre',0,'Lycée Le Dantec', 0);
