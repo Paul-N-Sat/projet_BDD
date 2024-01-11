@@ -9,7 +9,7 @@ BEGIN
     IF (SELECT est_abonne FROM Abonnes WHERE numero = NEW.num_abonné_emprunt) = 0 -- Si l'utilisateur n'est pas abonné
     THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = "Vous n\'êtes pas abonné.";
+        SET MESSAGE_TEXT = "Vous n\'êtes pas abonné."; -- On affiche un message d'erreur
     END IF;
 
 END //
