@@ -15,7 +15,7 @@ BEGIN
 
     IF nb_prets >= 5 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Vous avez déjà 5 prêts en cours.';
+        SET MESSAGE_TEXT = 'Vous avez déjà 5 prêts en cours. Vous ne pouvez pas en faire plus.';
     END IF;
 END //
 
