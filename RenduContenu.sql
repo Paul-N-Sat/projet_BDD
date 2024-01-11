@@ -22,6 +22,11 @@ BEGIN
     INSERT INTO Historique
     VALUES (abonne, code_barre_emprunt, date_emprunt_oeuvre, CURRENT_DATE, 0);
 
+    -- Supprimer l'emprunt
+    DELETE FROM Emprunt
+    WHERE Emprunt.num_abonné_emprunt = abonne 
+    AND code_barre = code_barre_emprunt;
+    
     -- Vérifier si la date de retour est dépassée auquel cas on pénalise l'abonné
     IF date_retour_emprunt_theorique < CURRENT_DATE THEN
         UPDATE Abonnes
@@ -45,10 +50,7 @@ BEGIN
     END IF;
 
 
-    -- Supprimer l'emprunt
-    DELETE FROM Emprunt
-    WHERE Emprunt.num_abonné_emprunt = abonne 
-    AND code_barre = code_barre_emprunt;
+
 
 
 END //

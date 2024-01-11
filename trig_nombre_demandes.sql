@@ -9,7 +9,7 @@ BEGIN
     DECLARE nb_demande INT;
 
     -- NB_DEMANDE : Vérifier le nombre de demande actuels de l'utilisateur
-    SELECT COUNT(code_barre) INTO nb_demande
+    SELECT COUNT(code_catalogue_dem) INTO nb_demande
     FROM Demande
     WHERE Demande.num_abonné = NEW.num_abonné;
 
