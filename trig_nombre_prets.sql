@@ -1,3 +1,4 @@
+USE Bibliotheque;   
 DELIMITER //
 
 -- Le trigger permet de vérifier si l'utilisateur a déjà 5 prêts en cours 
@@ -10,7 +11,7 @@ BEGIN
     -- NB_PRETS : Vérifier le nombre de prêts actuels de l'utilisateur
     SELECT COUNT(code_barre) INTO nb_prets
     FROM Emprunt
-    WHERE num_abonné = NEW.num_abonné;
+    WHERE num_abonné_emprunt = NEW.num_abonné_emprunt;
 
     IF nb_prets >= 5 THEN
         SIGNAL SQLSTATE '45000'

@@ -13,10 +13,11 @@ BEGIN
     WHERE titre LIKE CONCAT('%', keyWord, '%') 
     OR auteur LIKE CONCAT('%', keyWord, '%') 
     OR type_contenu LIKE CONCAT('%', keyWord, '%') 
-    OR genre LIKE CONCAT('%', keyWord, '%');) = 0 THEN
+    OR genre LIKE CONCAT('%', keyWord, '%')) = 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = "Aucun exemplaire existant. Vérifier l'écriture du mot clé.";
-    END IF 
+    END IF;
+ 
 END //
 
 DELIMITER ;

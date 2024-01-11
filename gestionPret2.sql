@@ -1,10 +1,12 @@
+USE Bibliotheque;
+
 DELIMITER //
 
 CREATE PROCEDURE GestionPrets(
     -- IN num_abonné INT,
     IN utilisateur_id INT,
 
-    -- IN code_catalogue INT,
+    -- IN code_cat INT,
     IN contenu_id INT,
 
     -- IN type_contenu VARCHAR(50),
@@ -20,7 +22,7 @@ CREATE PROCEDURE GestionPrets(
 BEGIN
     DECLARE rendu_emprunt DATE;
     DECLARE code_barre_exemplaire INT;
-    DECLARE somme INT;
+    DECLARE somme INT;  
     DECLARE somme2 INT;
 
 
@@ -28,7 +30,7 @@ BEGIN
     SELECT Exemplaires.code_barre INTO code_barre_exemplaire
         FROM Exemplaires
         WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
-        AND code_catalogue = contenu_id 
+        AND Exemplaires.code_cat = contenu_id 
         AND etablissement = Lieu
         LIMIT 1;
 
@@ -43,14 +45,14 @@ BEGIN
     SELECT COUNT(Exemplaires.code_barre) INTO somme
     FROM Exemplaires
     WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
-    AND code_catalogue = contenu_id 
+    AND Exemplaires.code_cat = contenu_id 
     AND etablissement = Lieu;
 
     -- SOMME2 : On calcule le nombre d'exemplaires disponibles dans tous les lieux 
     SELECT COUNT(Exemplaires.code_barre) INTO somme2
     FROM Exemplaires
     WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
-    AND code_catalogue = contenu_id;
+    AND Exemplaires.code_cat = contenu_id;
 
 
     -- Vérifier si des exemplaires du contenu sont disponibles, dans le lieu demandé
@@ -80,7 +82,7 @@ BEGIN
         ELSE
             SELECT etablissement FROM Exemplaires
             WHERE code_barre NOT IN (SELECT code_barre FROM Emprunt)
-            AND (code_catalogue = contenu_id);
+            AND (Exemplaires.code_cat = contenu_id);
 
             SIGNAL SQLSTATE '45000' 
             SET MESSAGE_TEXT = 'L exemplaire est disponible dans les etablissements ci-dessus:';
