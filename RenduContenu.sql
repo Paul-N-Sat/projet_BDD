@@ -26,7 +26,7 @@ BEGIN
     DELETE FROM Emprunt
     WHERE Emprunt.num_abonné_emprunt = abonne 
     AND code_barre = code_barre_emprunt;
-    
+
     -- Vérifier si la date de retour est dépassée auquel cas on pénalise l'abonné
     IF date_retour_emprunt_theorique < CURRENT_DATE THEN
         UPDATE Abonnes
@@ -42,11 +42,6 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = "Vous avez été pénalisé. Vous devez régler la somme de 1 Euro.";
 
-        -- Vérifier si l'abonné a été pénalisé 3 fois auquel cas on le banni
-        IF (SELECT COUNT(penalite) FROM Historique WHERE Historique.penalite = 1 AND Historique.num_abonné_histo = abonne) > 3 THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = "Vous avez été pénalisé 3 fois. Vous êtes banni.";
-        END IF;
     END IF;
 
 

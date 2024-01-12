@@ -13,7 +13,7 @@ VALUES
 (1,100300,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),0),
 (1,100500,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),0),
 (3,100201,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),0),
-(3,102000,CURRENT_DATE,DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),0);
+(3,102000,'2023-12-01', '2023-12-15',0);
 
 INSERT IGNORE INTO Bibliotheque.Historique
 VALUES
@@ -90,4 +90,9 @@ CREATE PROCEDURE test_trig_contenu_deja_demande()
         CALL GestionPrets(25,1000,'Livre',0,'Lycée Le Dantec', 0);
     END // 
 
+-- On teste le Rendu de l'emprunt en retard et la pénalité
+CREATE PROCEDURE test__rendu_penalite
+    BEGIN
+        CALL RenduContenu(3,102000);
+    END //
 DELIMITER ;
